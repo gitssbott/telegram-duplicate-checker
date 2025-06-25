@@ -30,7 +30,7 @@ async def check_duplicates(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # App start
 if __name__ == "__main__":
-    application = ApplicationBuilder().token("8011548194:AAElZ0ka7LDTvDbTF073cWCOtjJZa91EyFQ").build()
+    application = ApplicationBuilder().token("YOUR_BOT_TOKEN").build()
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_duplicates))
