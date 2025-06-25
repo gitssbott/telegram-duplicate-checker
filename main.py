@@ -1,27 +1,38 @@
+import logging
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
 
-TOKEN = '8011548194:AAElZ0ka7LDTvDbTF073cWCOtjJZa91EyFQ'
+# Logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
 
+# Start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("👋 Send usernames line‑by‑line. I'll check duplicates!")
+    await update.message.reply_text("👋 Send usernames line‑by‑line. I’ll check for duplicates.")
 
+# Username check
 async def check_duplicates(update: Update, context: ContextTypes.DEFAULT_TYPE):
     usernames = update.message.text.strip().splitlines()
-    seen, duplicates = set(), set()
-    for u in usernames:
-        c = u.strip().lower()
-        if c in seen:
-            duplicates.add(c)
-        else:
-            seen.add(c)
-    if duplicates:
-        await update.message.reply_text("❌ Duplicates:\n" + "\n".join(sorted(duplicates)))
-    else:
-        await update.message.reply_text("✅ All unique!")
+    seen = set()
+    duplicates = set()
+    for name in usernames:
+        n = name.strip().lower()
+        if n in seen:
+            duplicates.add(n)
+        seen.add(n)
 
+    if duplicates:
+        await update.message.reply_text("❌ Duplicates found:\n" + "\n".join(sorted(duplicates)))
+    else:
+        await update.message.reply_text("✅ All usernames are unique!")
+
+# App start
 if __name__ == "__main__":
-    app = ApplicationBuilder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_duplicates))
-    app.run_polling()
+    application = ApplicationBuilder().token("8011548194:AAElZ0ka7LDTvDbTF073cWCOtjJZa91EyFQ").build()
+
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_duplicates))
+
+    application.run_polling()
